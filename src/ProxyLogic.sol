@@ -4,9 +4,6 @@ pragma solidity ^0.8.0;
 import {FlashLoanSimpleReceiverBase} from "lib/aave-v3-core/contracts/flashloan/base/FlashLoanSimpleReceiverBase.sol";
 import {IPoolAddressesProvider} from "lib/aave-v3-core/contracts/interfaces/IPoolAddressesProvider.sol";
 import {IERC20} from "lib/aave-v3-core/contracts/dependencies/openzeppelin/contracts/IERC20.sol";
-import 
-
-
 
 contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
     address constant LOGIC_OWNER;
@@ -31,17 +28,25 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
         uint256 _leverageRatio
     ) public override {
         if (depositIsLong) {
-            uint256 repayAmount = longDepositedCraft(_amountDeposited, _leverageRatio);
+            uint256 repayAmount = longDepositedCraft(
+                _amountDeposited,
+                _leverageRatio
+            );
         } else {
-            uint256 repayAmount = shortDepositedCraft(_amountDeposited, _leverageRatio);
+            uint256 repayAmount = shortDepositedCraft(
+                _amountDeposited,
+                _leverageRatio
+            );
         }
         //TODO: repay
         //uint256 amountOwed = amount + premium;
         //IERC20(asset).approve(address(POOL), amountOwed);
     } //TODO
 
-    function longDepositedCraft(uint256 _amountDeposited,
-        uint256 _leverageRatio) internal {
+    function longDepositedCraft(
+        uint256 _amountDeposited,
+        uint256 _leverageRatio
+    ) internal {
         //need to be approved
         IERC20 long_token = IERC20(address_long);
         long_token.transferFrom(msg.sender, address(this), _amountDeposited);
@@ -49,8 +54,10 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
         //TODO: deposit on Aave
     }
 
-    function shortDepositedCraft(uint256 _amountDeposited,
-        uint256 _leverageRatio) internal {
+    function shortDepositedCraft(
+        uint256 _amountDeposited,
+        uint256 _leverageRatio
+    ) internal {
         IERC20 long_token = IERC20(address_long);
         long_token.transferFrom(msg.sender, address(this), _amountDeposited);
         requestFlashLoan(address_long, _amountDeposited * _leverageRatio);
