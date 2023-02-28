@@ -12,6 +12,8 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
     address public address_short;
     address public address_long;
 
+    uint256 public userDebt;
+
     ISwapRouter public constant swapRouter;
 
     modifier onlyOwner() {
@@ -37,7 +39,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
                 _leverageRatio
             );
             
-            craftSwap(repayAmount + premium, ERC20(address_long).balanceOf(msg.sender), address_long);
+            userDebt = craftSwap(repayAmount + premium, ERC20(address_long).balanceOf(msg.sender), address_long, address_short);
         
         } else {
 
@@ -46,20 +48,24 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
                 _leverageRatio
             );
 
-            craftSwap(repayAmount + premium - _amountDeposited, ERC20(address_long).balanceOf(msg.sender), address_long);
+            userDebt = craftSwap(repayAmount + premium - _amountDeposited, ERC20(address_long).balanceOf(msg.sender), address_long, address_short);
         
         }
         
     } 
 
+    function afterSwap(uint256 amountOut, uint256 amountInMaximum) internal returns (uint256 amountIn) {
+        return craftSwap(userDebt, IERC20(address_short).balanceOf(msg.sender), address_short, address_long);
+    }
+
     //SWAP CRAFTER
-    function craftSwap(uint256 amountOut, uint256 amountInMaximum, address tokenAfterSwap) internal returns (uint256 amountOut) {
-        TransferHelper.safeTransferFrom(address_short, msg.sender, address(this), amountInMaximum);
-        TransferHelper.safeApprove(address_short, address(swapRouter), amountInMaximum);
+    function craftSwap(uint256 amountOut, uint256 amountInMaximum, address tokenBeforeSwap, address tokenAfterSwap) internal returns (uint256 amountIn) {
+        TransferHelper.safeTransferFrom(tokenBeforeSwap, msg.sender, address(this), amountInMaximum);
+        TransferHelper.safeApprove(tokenBeforeSwap, address(swapRouter), amountInMaximum);
 
         ISwapRouter.ExactOutputSingleParams memory params =
             ISwapRouter.ExactOutputSingleParams({
-                tokenIn: address_short,
+                tokenIn: tokenBeforeSwap,
                 tokenOut: tokenAfterSwap,
                 fee: poolFee,
                 recipient: msg.sender,
@@ -72,9 +78,10 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
         amountIn = swapRouter.exactOutputSingle(params);
 
         if (amountIn < amountInMaximum) {
-            TransferHelper.safeApprove(address_short, address(swapRouter), 0);
-            TransferHelper.safeTransfer(address_short, msg.sender, amountInMaximum - amountIn);
+            TransferHelper.safeApprove(tokenBeforeSwap, address(swapRouter), 0);
+            TransferHelper.safeTransfer(tokenBeforeSwap, msg.sender, amountInMaximum - amountIn);
         }
+        return amountIn;
     }
 
     function longDepositedCraft(
