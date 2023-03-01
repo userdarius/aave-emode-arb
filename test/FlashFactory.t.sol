@@ -13,7 +13,7 @@ contract FlashFactoryTest is Test, HelperTest {
     }
 
     function testConstructor() public {
-        assertfactory.REGISTRY()
+        assertfactory.REGISTRY();
     }
 
     function testSetNumber(uint256 x) public {

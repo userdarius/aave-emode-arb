@@ -5,6 +5,7 @@ import "./interface/IFlashLoan.sol";
 
 contract ProxyCraftPos is IFlashLoan {
     address constant public OWNER_; //placeholder for proxy
+    address constant public OWNER;
     address constant public HELPER;
     address constant public address_short;
     address constant public address_long;
@@ -25,7 +26,7 @@ contract ProxyCraftPos is IFlashLoan {
     //TODO: mod craft based on arch
     function craftPosition() override external {
         // TODO pass good arg
-        (bool success, _) = HELPER.delegatecall(
+        (bool success, ) = HELPER.delegatecall(
             abi.encodeWithSignature("craftPosition()", ));//TODO
         require(success);
     }
