@@ -26,7 +26,7 @@ contract ProxyTest is Test, HelperTest {
         vm.startPrank(FAKE_FACTORY);
         address longToken = Mainnet_wstETH;
         address shortToken = Mainnet_wETH;
-        ProxyCraftPos proxy = new ProxyCraftPos(PROXY_LOGIC, address(0));
+        ProxyCraftPos proxy = new ProxyCraftPos(PROXY_LOGIC, address(0), shortToken, longToken, address(0));
         vm.stopPrank();
 
     }
