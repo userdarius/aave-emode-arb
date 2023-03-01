@@ -9,9 +9,10 @@ import "../lib/v3-periphery/contracts/libraries/TransferHelper.sol";
 
 contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
     address constant LOGIC_OWNER;
-    address public constant HELPER_PLACEHOLDER;
-    address public address_short;
-    address public address_long;
+    address constant private PROXY_OWNER; //placeholder
+    address public constant HELPER; //placeholder
+    address public address_short; //placeholder
+    address public address_long; //placeholder
 
     uint256 public userDebt;
 

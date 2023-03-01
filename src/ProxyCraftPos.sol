@@ -6,7 +6,7 @@ import "./interface/IFlashLoan.sol";
 contract ProxyCraftPos is IFlashLoan {//TODO: change everything to a InitializableImmutableAdminUpgradeabilityProxy (https://etherscan.io/address/0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2#code)
     address constant public OWNER_; //placeholder for proxy
     address constant public OWNER;
-    address constant public HELPER;
+    address constant public HELPER;//TODO: rename this constant to implementation
     address constant public address_short;
     address constant public address_long;
     
