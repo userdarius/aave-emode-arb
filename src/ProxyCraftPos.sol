@@ -17,7 +17,7 @@ contract ProxyCraftPos is IFlashLoan {
     }
     
     function unwindPosition(uint256 slippage) override external{
-        (bool success, _) = HELPER.delegatecall(
+        (bool success, ) = HELPER.delegatecall(
             abi.encodeWithSignature("unwindPosition(uint256)", slippage));
         require(success);
     }

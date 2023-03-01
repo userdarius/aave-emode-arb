@@ -1,7 +1,7 @@
 //SDPX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract NameRegistry {
+contract Registry {
     address public FACTORY_ADDRESS;
     // stores the proxies in a mapping(from user address to mapping(from index uint to proxy address))
     mapping(address => mapping(uint256 => address)) public registry;
