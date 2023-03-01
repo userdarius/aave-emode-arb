@@ -10,7 +10,7 @@ contract FlashFactoryTest is Test, HelperTest {
     function setUp() public {
         HelperTest.main();
         vm.startPrank(DEPLOYER);
-        factory = new FlashFactory(AAVE_ADDRESS_PROVIDER, address(0), Mainnet_wETH, Mainnet_wstETH);
+        factory = new FlashFactory(AAVE_ADDRESS_PROVIDER, address(0));
         vm.stopPrank();
     }
 

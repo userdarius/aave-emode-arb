@@ -6,8 +6,11 @@ interface IFlashLoan {
     function craftPosition(
         bool depositIsLong,
         uint256 _amountDeposited,
-        uint256 _leverageRatio) external returns (bool);
+        uint256 _leverageRatio,
+        address address_short,
+        address address_long,
+        address address_pool) external returns (bool);
 
     //TODO: mod unwind based on arch
-    function unwindPosition(uint256 slippage) external returns (bool);
+    function unwindPosition(uint256 shortDebt, address address_short, address address_long, address address_pool) external returns (bool);
 }

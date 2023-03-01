@@ -9,53 +9,58 @@ import "./interface/IFlashLoan.sol";
 import "../lib/v3-core/contracts/UniswapV3Pool.sol";
 import "./AaveTransferHelper.sol";
 
+import "./FlashFactory.sol";
+
+import "./Registry.sol";
+
 contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
     address immutable LOGIC_OWNER;
     address public immutable HELPER_PLACEHOLDER;
-    address public address_short;
-    address public address_long;
-
-    uint256 public userDebt;
 
     address public constant swapRouterAddr = 0xE592427A0AEce92De3Edee1F18E0157C05861564;
-
 
     modifier onlyOwner() {
         require(msg.sender == LOGIC_OWNER, "Unauthorized");
         _;
     }
 
-    constructor(address _addressProvider, address helper, address _short, address _long)
+    constructor(address _addressProvider, address helper)
         FlashLoanSimpleReceiverBase(IPoolAddressesProvider(_addressProvider))
     {
         LOGIC_OWNER = msg.sender;
         HELPER_PLACEHOLDER = helper;
-        address_short = _short;
-        address_long = _long;
     }
 
     function craftPosition(
         bool depositIsLong,
         uint256 _amountDeposited,
-        uint256 _leverageRatio
+        uint256 _leverageRatio,
+        address address_short,
+        address address_long,
+        address address_pool
     ) public override returns (bool success){
         uint256 repayAmount;
         if (depositIsLong) {
             repayAmount = longDepositedCraft(
                 _amountDeposited,
-                _leverageRatio
+                _leverageRatio,
+                address_short,
+                address_long
             );
         } else {
             repayAmount = shortDepositedCraft(
                 _amountDeposited,
-                _leverageRatio
+                _leverageRatio,
+                address_short,
+                address_long
             );
         }
-        userDebt = craftSwap(
+        craftSwap(
                 repayAmount,
                 IERC20(address_long).balanceOf(LOGIC_OWNER),
                 address_long,
-                address_short
+                address_short,
+                address_pool
             );
         return true;
     }
@@ -65,9 +70,10 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
         uint256 amountOut,
         uint256 amountInMaximum,
         address tokenBeforeSwap,
-        address tokenAfterSwap
+        address tokenAfterSwap,
+        address address_pool
     ) internal returns (uint256 amountIn) {
-        uint24 poolFee = UniswapV3Pool(address(0)).fee();
+        uint24 poolFee = UniswapV3Pool(address_pool).fee();
         AaveTransferHelper.safeTransferFrom(
             tokenBeforeSwap,
             LOGIC_OWNER,
@@ -107,7 +113,9 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
 
     function longDepositedCraft(
         uint256 _amountDeposited,
-        uint256 _leverageRatio
+        uint256 _leverageRatio,
+        address address_short,
+        address address_long
     ) internal returns (uint256){
         //need to be approved
         uint256 amount = _amountDeposited * (_leverageRatio - 1);
@@ -146,7 +154,9 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
 
     function shortDepositedCraft(
         uint256 _amountDeposited,
-        uint256 _leverageRatio
+        uint256 _leverageRatio,
+        address address_short,
+        address address_long
     ) internal returns (uint256){
         IERC20 long_token = IERC20(address_long);
 
@@ -160,7 +170,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
         return amount;
     }
 
-    function unwindPosition(uint256 shortDebt) public override returns (bool success) {
+    function unwindPosition(uint256 shortDebt, address address_short, address address_long, address address_pool) public override returns (bool success) {
         address variableDebt = POOL.getReserveData(address_short).variableDebtTokenAddress;
         IERC20 variableDebtToken = IERC20(variableDebt);
         uint256 variableDebtBalance = variableDebtToken.balanceOf(LOGIC_OWNER);
@@ -168,7 +178,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
         requestFlashLoan(address_short, variableDebtBalance);
         POOL.repay(address_short, variableDebtBalance, 2, LOGIC_OWNER);
 
-        craftSwap(variableDebtBalance, IERC20(address_short).balanceOf(LOGIC_OWNER), address_long, address_short);
+        craftSwap(variableDebtBalance, IERC20(address_short).balanceOf(LOGIC_OWNER), address_long, address_short, address_pool);
 
         return true;
     } //TODO

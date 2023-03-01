@@ -13,7 +13,7 @@ contract ProxyTest is Test, HelperTest {
         HelperTest.main();
         //Deploy the proxy logic with DEPLOYER
         vm.startPrank(DEPLOYER);
-        PROXY_LOGIC = address(new ProxyLogic(AAVE_ADDRESS_PROVIDER, address(0), Mainnet_wETH, Mainnet_wstETH));
+        PROXY_LOGIC = address(new ProxyLogic(AAVE_ADDRESS_PROVIDER, address(0)));
         vm.stopPrank();
 
         //Emulate the deployement of the factory with an EOA
@@ -26,7 +26,7 @@ contract ProxyTest is Test, HelperTest {
         vm.startPrank(FAKE_FACTORY);
         address longToken = Mainnet_wstETH;
         address shortToken = Mainnet_wETH;
-        ProxyCraftPos proxy = new ProxyCraftPos(PROXY_LOGIC, address(0), shortToken, longToken);
+        ProxyCraftPos proxy = new ProxyCraftPos(PROXY_LOGIC, address(0));
         vm.stopPrank();
 
     }
