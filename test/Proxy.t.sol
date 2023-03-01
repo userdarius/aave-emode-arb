@@ -23,9 +23,9 @@ contract ProxyTest is Test, HelperTest {
     function testConstructor() public {
         //Deploy a proxy from the FAKE_FACTORY
         vm.startPrank(FAKE_FACTORY);
-        address long_asset = Mainnet_wstETH;
-        address short_asset = Mainnet_wETH;
-        ProxyCraftPos proxy = new ProxyCraftPos(PROXY_LOGIC, short_asset, long_asset);
+        address longToken = Mainnet_wstETH;
+        address shortToken = Mainnet_wETH;
+        ProxyCraftPos proxy = new ProxyCraftPos(PROXY_LOGIC, shortToken, longToken);
         vm.stopPrank(FAKE_FACTORY);
 
     }

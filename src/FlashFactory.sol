@@ -11,7 +11,7 @@ contract FlashFactory {
     address AAVE_ADDRESS_PROVIDER;
 
     constructor(address aaveAddressProvider) {
-        REGISTRY = address(new Registry());
+        REGISTRY = address(new Registry(address(this)));
         PROXY_LOGIC = address(new ProxyLogic(aaveAddressProvider));
     }
 

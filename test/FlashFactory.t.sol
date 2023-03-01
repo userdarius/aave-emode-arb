@@ -5,19 +5,32 @@ import "forge-std/Test.sol";
 import "../src/FlashFactory.sol";
 import "./HelperTest.t.sol";
 contract FlashFactoryTest is Test, HelperTest {
+    FlashFactory factory;
 
     function setUp() public {
         vm.startPrank(DEPLOYER);
-        FlashFactory factory = new FlashFactory();
+        factory = new FlashFactory(AAVE_ADDRESS_PROVIDER);
         vm.stopPrank(DEPLOYER);
     }
 
     function testConstructor() public {
-        assertfactory.REGISTRY();
+        //making sure Registry and ProxyLogic have been deployed correctly
+        assertTrue(factory.REGISTRY() != 0x0);
+        assertTrue(factory.PROXY_LOGIC() != 0x0);
+        //TODO: test some getters from Registry and ProxyLogic
     }
 
-    function testSetNumber(uint256 x) public {
-        counter.setNumber(x);
-        assertEq(counter.number(), x);
+    function createProxy() public {
+        vm.startPrank(USER);
+        address longToken = Mainnet_wstETH;
+        address shortToken = Mainnet_wETH;
+        address proxy = factory.createProxy(shortToken, longToken);
+        vm.stopPrank(USER);
+        Registry(REGISTRY).getCount(USER);
+        assertEq(Registry(REGISTRY).getCount(USER), 1);
+        assertEq(Registry(REGISTRY).FACTORY_ADDRESS, address(factory));
+        //TODO assert the new proxy is in the Registry
+        //assert the getters of the Proxy contract
+        
     }
 }

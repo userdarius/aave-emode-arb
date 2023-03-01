@@ -11,6 +11,7 @@ contract HelperTest is Test {
 
     function setUp() public {
         deal(DEPLOYER, 10 ether);
+        deal(USER, 10 ether);
         deal(Mainnet_wETH, USER, 10 ether);
         deal(Mainnet_wstETH, USER, 10 ether);
     }
