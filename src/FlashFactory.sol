@@ -10,21 +10,25 @@ contract FlashFactory {
     address public PROXY_LOGIC;
     address AAVE_ADDRESS_PROVIDER;
 
-    constructor(address aaveAddressProvider) {
+    constructor(address aaveAddressProvider, address helper, address _short, address _long) {
         REGISTRY = address(new Registry(address(this)));
-        PROXY_LOGIC = address(new ProxyLogic(aaveAddressProvider));
+        PROXY_LOGIC = address(new ProxyLogic(aaveAddressProvider, helper, _short, _long ));
     }
 
     function createProxy(address shortToken, address longToken) public returns (address newProxyAddress){
         newProxyAddress = address(new ProxyCraftPos(msg.sender, PROXY_LOGIC, shortToken, longToken));
-        REGISTRY.registerUser(msg.sender, newProxyAddress);
+        Registry(REGISTRY).registerUser(msg.sender, newProxyAddress);
+    }
+
+    function getRegistry() public view returns (Registry registry) {
+        return Registry(REGISTRY);
     }
 
     //TODO: should we really have this function or just use the one in Registry
     function getDeployedContracts(address user, uint256 index)
         public
         view
-        returns (address[] memory)
+        returns (address)
     {
         return Registry(REGISTRY).getUserProxy(user, index);
     }

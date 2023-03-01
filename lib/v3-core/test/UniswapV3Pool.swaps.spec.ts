@@ -1,5 +1,5 @@
 import { Decimal } from 'decimal.js'
-import { BigNumber, BigNumberish, ContractTransaction } from 'ethers'
+import { BigNumber, BigNumberish, ContractTransaction, Wallet } from 'ethers'
 import { ethers, waffle } from 'hardhat'
 import { MockTimeUniswapV3Pool } from '../typechain/MockTimeUniswapV3Pool'
 import { TestERC20 } from '../typechain/TestERC20'
@@ -448,21 +448,25 @@ const TEST_POOLS: PoolTestCase[] = [
 ]
 
 describe('UniswapV3Pool swap tests', () => {
-  const [wallet] = waffle.provider.getWallets()
+  let wallet: Wallet, other: Wallet
 
   let loadFixture: ReturnType<typeof createFixtureLoader>
 
   before('create fixture loader', async () => {
+    ;[wallet, other] = await (ethers as any).getSigners()
+
     loadFixture = createFixtureLoader([wallet])
   })
 
   for (const poolCase of TEST_POOLS) {
     describe(poolCase.description, () => {
       const poolCaseFixture = async () => {
-        const { createPool, token0, token1, swapTargetCallee: swapTarget } = await poolFixture(
-          [wallet],
-          waffle.provider
-        )
+        const {
+          createPool,
+          token0,
+          token1,
+          swapTargetCallee: swapTarget,
+        } = await poolFixture([wallet], waffle.provider)
         const pool = await createPool(poolCase.feeAmount, poolCase.tickSpacing)
         const poolFunctions = createPoolFunctions({ swapTarget, token0, token1, pool })
         await pool.initialize(poolCase.startingPrice)
