@@ -10,8 +10,8 @@ contract ProxyCraftPos is IFlashLoan {
     address constant public address_short;
     address constant public address_long;
     
-    constructor(address _helper, address _short, address _long) {
-        OWNER = msg.sender;
+    constructor(address _owner, address _helper, address _short, address _long) {
+        OWNER = _owner;
         HELPER = _helper;
         address_short = _short;
         address_long = _long;
