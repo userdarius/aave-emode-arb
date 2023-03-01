@@ -6,11 +6,13 @@ import "../src/FlashFactory.sol";
 import "./HelperTest.t.sol";
 contract FlashFactoryTest is Test, HelperTest {
     FlashFactory factory;
+    address REGISTRY_ADDRESS;
 
     function setUp() public {
         vm.startPrank(DEPLOYER);
         factory = new FlashFactory(AAVE_ADDRESS_PROVIDER);
         vm.stopPrank(DEPLOYER);
+        REGISTRY_ADDRESS = factory.REGISTRY();
     }
 
     function testConstructor() public {
@@ -26,9 +28,9 @@ contract FlashFactoryTest is Test, HelperTest {
         address shortToken = Mainnet_wETH;
         address proxy = factory.createProxy(shortToken, longToken);
         vm.stopPrank(USER);
-        Registry(REGISTRY).getCount(USER);
-        assertEq(Registry(REGISTRY).getCount(USER), 1);
-        assertEq(Registry(REGISTRY).FACTORY_ADDRESS, address(factory));
+        assertEq(Registry(REGISTRY_ADDRESS).getCount(USER), 1);
+        assertEq(Registry(REGISTRY_ADDRESS).FACTORY_ADDRESS, address(factory));
+        assertEq(Registry(REGISTRY_ADDRESS).getUserProxy(USER, 0), proxy);
         //TODO assert the new proxy is in the Registry
         //assert the getters of the Proxy contract
         
