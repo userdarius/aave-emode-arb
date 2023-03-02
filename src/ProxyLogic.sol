@@ -59,6 +59,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
                 address_short
             );
         }
+        //TODO: repay the flashloan
     }
 
     function afterSwap(uint256 amountOut, uint256 amountInMaximum)
