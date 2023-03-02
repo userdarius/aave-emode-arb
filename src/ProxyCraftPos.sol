@@ -19,7 +19,7 @@ contract ProxyCraftPos is IFlashLoan {//TODO: change everything to a Initializab
     }
     
     function unwindPosition(uint256 shortDebt) override external returns (bool success){
-        (success, ) = HELPER.delegatecall(
+        (bool success, ) = HELPER.delegatecall(
             abi.encodeWithSignature("unwindPosition(uint256)", shortDebt));
         require(success);
     }
@@ -30,7 +30,7 @@ contract ProxyCraftPos is IFlashLoan {//TODO: change everything to a Initializab
         uint256 _leverageRatio
         ) override external returns (bool success) {
         // TODO pass good arg
-        (success, ) = HELPER.delegatecall(
+        (bool success, ) = HELPER.delegatecall(
             abi.encodeWithSignature("craftPosition(bool,uint256,uint256)", depositIsLong, _amountDeposited, _leverageRatio));
         require(success);
     }
