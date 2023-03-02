@@ -210,6 +210,4 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
         uint8 bits = uint8((x >> 168) & 0xFF);
         return bits;
     }
-
-    receive() external payable {} //TODO: check why it is there
 }
