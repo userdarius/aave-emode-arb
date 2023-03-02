@@ -11,16 +11,18 @@ contract FlashFactoryTest is HelperTest {
 
     function setUp() public override {
         super.setUp();
+        console.log("Starting the setup of FlashFactory by Deployer");
         vm.startPrank(DEPLOYER);
         factory = new FlashFactory(AAVE_ADDRESS_PROVIDER, UNISWAP_ROUTER);
         vm.stopPrank();
         REGISTRY_ADDRESS = factory.REGISTRY();
+        console.log("FlashFactory has been setup");
     }
 
     function testConstructor() public {
         //making sure Registry and ProxyLogic have been deployed correctly
-        //assertTrue(temp != address(0));
         assertTrue(factory.PROXY_LOGIC() != address(0));
+        assertTrue(factory.REGISTRY() != address(0));
     }
 
     function createProxy() public {
@@ -40,7 +42,7 @@ contract FlashFactoryTest is HelperTest {
         assertEq(proxy.getOwner(), address(factory));
         assertEq(proxy.getImplementation(), factory.PROXY_LOGIC());
 
-        
+
         //To call proxy functions, you need to use a selector else there are compilation errors
         //see example below
         (bool _ok, bytes memory data) = proxy_address.call(abi.encodeWithSignature("address_short()"));

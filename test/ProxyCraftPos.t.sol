@@ -12,6 +12,7 @@ contract ProxyCraftPosTest is HelperTest {
     function setUp() public override {
         super.setUp();
         //Deploy the proxy logic with DEPLOYER
+        console.log("Starting the setup of ProxyCraftPos by Deployer");
         vm.startPrank(DEPLOYER);
         PROXY_LOGIC = address(new ProxyLogic(AAVE_ADDRESS_PROVIDER, UNISWAP_ROUTER));
         vm.stopPrank();
@@ -19,6 +20,7 @@ contract ProxyCraftPosTest is HelperTest {
         //Emulate the deployement of the factory with an EOA
         FAKE_FACTORY = makeAddr("FAKE_FACTORY");
         deal(FAKE_FACTORY, 10 ether);
+        console.log("ProxyCraftPos has been setup");
     }
 
     function testConstructor() public {

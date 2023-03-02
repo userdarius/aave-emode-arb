@@ -16,5 +16,6 @@ contract HelperTest is Test {
         deal(USER, 10 ether);
         deal(Mainnet_wETH, USER, 10 ether);
         deal(Mainnet_wstETH, USER, 10 ether);
+        console.log("dealt the money to deployer and user");
     }
 } 
