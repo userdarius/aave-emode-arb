@@ -8,8 +8,6 @@ contract Registry {
     // stores the count of proxies for each user (starting from 1)
     mapping(address => uint256) public count;
 
-    mapping(address => mapping(address => address)) public uniswapV3Pools;
-
     modifier onlyFactory() {
         require(msg.sender == FACTORY_ADDRESS, "Not factory");
         _;
@@ -17,23 +15,6 @@ contract Registry {
 
     constructor(address _factoryAddress) {
         FACTORY_ADDRESS = _factoryAddress;
-    }
-
-    function registerUniswapV3Pool(
-        address token0,
-        address token1,
-        address pool
-    ) public onlyFactory returns (bool) {
-        uniswapV3Pools[token0][token1] = pool;
-        return true;
-    }
-
-    function getUniswapV3Pool(address token0, address token1)
-        external
-        view
-        returns (address)
-    {
-        return uniswapV3Pools[token0][token1];
     }
 
     // GETTERS:
