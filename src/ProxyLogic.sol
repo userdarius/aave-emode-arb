@@ -27,11 +27,10 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
         _;
     }
 
-    constructor(address _addressProvider, address helper)
+    constructor(address _addressProvider)
         FlashLoanSimpleReceiverBase(IPoolAddressesProvider(_addressProvider))
     {
         LOGIC_OWNER = msg.sender;
-        HELPER_PLACEHOLDER = helper;
     }
 
     function craftPosition(
@@ -57,6 +56,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
                 address_long,
                 address_short
             );
+        //TODO: repay the flashloan 
         return true;
     }
 

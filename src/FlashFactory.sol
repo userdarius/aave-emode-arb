@@ -12,7 +12,7 @@ contract FlashFactory {
 
     constructor(address aaveAddressProvider, address helper) {
         REGISTRY = address(new Registry(address(this)));
-        PROXY_LOGIC = address(new ProxyLogic(aaveAddressProvider, helper ));
+        PROXY_LOGIC = address(new ProxyLogic(aaveAddressProvider));
     }
 
     function createProxy(address shortToken, address longToken) public returns (address newProxyAddress){
