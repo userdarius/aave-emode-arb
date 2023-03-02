@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import "../src/ProxyCraftPos.sol";
 import "../src/ProxyLogic.sol";
 import "./HelperTest.t.sol";
-contract ProxyTest is Test, HelperTest {
+contract ProxyCraftPosTest is Test, HelperTest {
     address FAKE_FACTORY;
     address PROXY_LOGIC;
 
@@ -13,7 +13,7 @@ contract ProxyTest is Test, HelperTest {
         HelperTest.main();
         //Deploy the proxy logic with DEPLOYER
         vm.startPrank(DEPLOYER);
-        PROXY_LOGIC = address(new ProxyLogic(AAVE_ADDRESS_PROVIDER));
+        PROXY_LOGIC = address(new ProxyLogic(AAVE_ADDRESS_PROVIDER, UNISWAP_ROUTER));
         vm.stopPrank();
 
         //Emulate the deployement of the factory with an EOA
@@ -29,7 +29,7 @@ contract ProxyTest is Test, HelperTest {
         //TODO: deploy a ProxyLogic contract
         ProxyCraftPos proxy = new ProxyCraftPos(PROXY_LOGIC, address(0), shortToken, longToken);
         vm.stopPrank();
-
+        //TODO: assert "address_short, address_long, owner"
     }
 
 

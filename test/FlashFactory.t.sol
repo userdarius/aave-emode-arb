@@ -12,7 +12,7 @@ contract FlashFactoryTest is Test, HelperTest {
     function setUp() public {
         HelperTest.main();
         vm.startPrank(DEPLOYER);
-        factory = new FlashFactory(AAVE_ADDRESS_PROVIDER);
+        factory = new FlashFactory(AAVE_ADDRESS_PROVIDER, UNISWAP_ROUTER);
         vm.stopPrank();
         REGISTRY_ADDRESS = factory.REGISTRY();
     }
@@ -39,7 +39,9 @@ contract FlashFactoryTest is Test, HelperTest {
         ProxyCraftPos proxy = ProxyCraftPos(payable(proxy_address));
         assertEq(proxy.getOwner(), address(factory));
         assertEq(proxy.getImplementation(), factory.PROXY_LOGIC());
-        assertEq(proxy.address_short(), address(factory));
+        (bool _ok, bytes memory data) = proxy_address.call(abi.encodeWithSignature("address_short()"));
+        (address _factory_address) = abi.decode(data, (address));
+        assertEq(_factory_address, address(factory));
         
     }
 }

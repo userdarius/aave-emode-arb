@@ -14,13 +14,13 @@ import "./FlashFactory.sol";
 import "./Registry.sol";
 
 contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
-    address public owner;
-    address public address_short;
-    address public address_long;
+    address owner;
+    address address_short;
+    address address_long;
 
     address public immutable swapRouterAddr;
 
-    modifier onlyOwner() {
+    modifier ifOwner() {
         require(msg.sender == owner, "Unauthorized");
         _;
     }
@@ -31,6 +31,18 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
         swapRouterAddr = _swapRouterAddr;
     }
 
+    //function address_short() external view returns (address){
+        //return address_short;
+    //}
+
+    //function address_long() external view returns (address){
+        //return address_long;
+    //}
+
+    //function getowner() external view returns (address){
+        //return owner;
+    //}
+    
     function initialize(address _owner, address _address_short, address _address_long)
         internal
     {
@@ -43,7 +55,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
         bool depositIsLong,
         uint256 _amountDeposited,
         uint256 _leverageRatio
-    ) public override onlyOwner returns (bool success) {
+    ) public override ifOwner returns (bool success) {
         //TODO: still WIP
         uint256 repayAmount;
         uint256 premium = POOL.FLASHLOAN_PREMIUM_TOTAL(); //TODO: still useful?
@@ -182,7 +194,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
     function unwindPosition(uint256 shortDebt)
         public
         override
-        onlyOwner
+        ifOwner
         returns (bool success)
     {
         address variableDebt = POOL
