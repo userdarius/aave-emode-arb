@@ -36,9 +36,9 @@ contract FlashFactoryTest is Test, HelperTest {
         assertEq(registry.getUserProxy(USER, 0), proxy_address);
         //TODO assert the new proxy is in the Registry
         //assert the getters of the Proxy contract
-        ProxyCraftPos proxy = ProxyCraftPos(proxy_address);
-        assertEq(proxy.OWNER(), address(factory));
-        assertEq(proxy.HELPER(), factory.PROXY_LOGIC());
+        ProxyCraftPos proxy = ProxyCraftPos(payable(proxy_address));
+        assertEq(proxy.getOwner(), address(factory));
+        assertEq(proxy.getImplementation(), factory.PROXY_LOGIC());
         assertEq(proxy.address_short(), address(factory));
         
     }
