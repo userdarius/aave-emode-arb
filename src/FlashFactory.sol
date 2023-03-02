@@ -26,6 +26,6 @@ contract FlashFactory {
 
     function createProxy(address shortToken, address longToken) public returns (address newProxyAddress){
         newProxyAddress = address(new ProxyCraftPos(msg.sender, PROXY_LOGIC, shortToken, longToken, getUniswapV3Pool(shortToken, longToken)));
-        Registry(REGISTRY).registerUser(msg.sender, newProx);
+        Registry(REGISTRY).registerUser(msg.sender, newProxyAddress);
     }
 }

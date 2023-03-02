@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
 import "../src/FlashFactory.sol";
@@ -9,6 +9,7 @@ contract FlashFactoryTest is Test, HelperTest {
     address REGISTRY_ADDRESS;
 
     function setUp() public {
+        HelperTest.main();
         vm.startPrank(DEPLOYER);
         factory = new FlashFactory(AAVE_ADDRESS_PROVIDER);
         vm.stopPrank(DEPLOYER);
@@ -17,8 +18,8 @@ contract FlashFactoryTest is Test, HelperTest {
 
     function testConstructor() public {
         //making sure Registry and ProxyLogic have been deployed correctly
-        assertTrue(factory.REGISTRY() != 0x0);
-        assertTrue(factory.PROXY_LOGIC() != 0x0);
+        //assertTrue(temp != address(0));
+        assertTrue(factory.PROXY_LOGIC() != address(0));
         //TODO: test some getters from Registry and ProxyLogic
     }
 
