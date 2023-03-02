@@ -39,6 +39,10 @@ contract FlashFactoryTest is HelperTest {
         ProxyCraftPos proxy = ProxyCraftPos(payable(proxy_address));
         assertEq(proxy.getOwner(), address(factory));
         assertEq(proxy.getImplementation(), factory.PROXY_LOGIC());
+
+        
+        //To call proxy functions, you need to use a selector else there are compilation errors
+        //see example below
         (bool _ok, bytes memory data) = proxy_address.call(abi.encodeWithSignature("address_short()"));
         (address _factory_address) = abi.decode(data, (address));
         assertEq(_factory_address, address(factory));
