@@ -11,7 +11,7 @@ contract HelperTest is Test {
     address Mainnet_wETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     address Mainnet_wstETH = 0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0;
 
-    function main() public {
+    function setUp() public virtual {
         deal(DEPLOYER, 10 ether);
         deal(USER, 10 ether);
         deal(Mainnet_wETH, USER, 10 ether);

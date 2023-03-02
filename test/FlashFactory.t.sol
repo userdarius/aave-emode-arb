@@ -5,12 +5,12 @@ import "forge-std/Test.sol";
 import "../src/FlashFactory.sol";
 import "./HelperTest.t.sol";
 import "../src/ProxyCraftPos.sol";
-contract FlashFactoryTest is Test, HelperTest {
+contract FlashFactoryTest is HelperTest {
     FlashFactory factory;
     address REGISTRY_ADDRESS;
 
-    function setUp() public {
-        HelperTest.main();
+    function setUp() public override {
+        super.setUp();
         vm.startPrank(DEPLOYER);
         factory = new FlashFactory(AAVE_ADDRESS_PROVIDER, UNISWAP_ROUTER);
         vm.stopPrank();

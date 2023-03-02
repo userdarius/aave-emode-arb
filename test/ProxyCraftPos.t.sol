@@ -5,12 +5,12 @@ import "forge-std/Test.sol";
 import "../src/ProxyCraftPos.sol";
 import "../src/ProxyLogic.sol";
 import "./HelperTest.t.sol";
-contract ProxyCraftPosTest is Test, HelperTest {
+contract ProxyCraftPosTest is HelperTest {
     address FAKE_FACTORY;
     address PROXY_LOGIC;
 
-    function setUp() public {
-        HelperTest.main();
+    function setUp() public override {
+        super.setUp();
         //Deploy the proxy logic with DEPLOYER
         vm.startPrank(DEPLOYER);
         PROXY_LOGIC = address(new ProxyLogic(AAVE_ADDRESS_PROVIDER, UNISWAP_ROUTER));
