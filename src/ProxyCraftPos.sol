@@ -27,7 +27,7 @@ contract ProxyCraftPos is IFlashLoan {//TODO: change everything to a Initializab
     function craftPosition(bool depositIsLong,
         uint256 _amountDeposited,
         uint256 _leverageRatio
-        ) override external returns (bool success){
+        ) override external returns (bool success) {
         // TODO pass good arg
         (success, ) = HELPER.delegatecall(
             abi.encodeWithSignature("craftPosition(bool,uint256,uint256)", depositIsLong, _amountDeposited, _leverageRatio));

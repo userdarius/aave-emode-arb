@@ -19,17 +19,4 @@ contract FlashFactory {
         newProxyAddress = address(new ProxyCraftPos(msg.sender, PROXY_LOGIC, shortToken, longToken, Registry(REGISTRY).getUniswapV3Pool(shortToken, longToken)));
         Registry(REGISTRY).registerUser(msg.sender, newProxyAddress);
     }
-
-    function getRegistry() public view returns (Registry registry) {
-        return Registry(REGISTRY);
-    }
-
-    //TODO: should we really have this function or just use the one in Registry
-    function getDeployedContracts(address user, uint256 index)
-        public
-        view
-        returns (address)
-    {
-        return Registry(REGISTRY).getUserProxy(user, index);
-    }
 }
