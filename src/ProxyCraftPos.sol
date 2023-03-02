@@ -17,4 +17,20 @@ contract ProxyCraftPos is IFlashLoan {//TODO: change everything to a Initializab
         address_long = _long;
     }
     
+    function unwindPosition(uint256 shortDebt) override external returns (bool success){
+        (success, ) = HELPER.delegatecall(
+            abi.encodeWithSignature("unwindPosition(uint256)", shortDebt));
+        require(success);
+    }
+
+    //TODO: mod craft based on arch
+    function craftPosition(bool depositIsLong,
+        uint256 _amountDeposited,
+        uint256 _leverageRatio
+        ) external returns (bool success) {
+        // TODO pass good arg
+        (success, ) = HELPER.delegatecall(
+            abi.encodeWithSignature("craftPosition(bool,uint256,uint256)", depositIsLong, _amountDeposited, _leverageRatio));
+        require(success);
+    }
 }
