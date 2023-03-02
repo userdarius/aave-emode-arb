@@ -14,12 +14,11 @@ import "./FlashFactory.sol";
 import "./Registry.sol";
 
 contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
-    address constant LOGIC_OWNER;//TODO: immutable?
-    address constant private PROXY_OWNER; //placeholder
-    address public constant HELPER; //placeholder
+    address immutable LOGIC_OWNER;//TODO: immutable?
+    address private PROXY_OWNER; //placeholder
+    address private HELPER; //placeholder
     address public address_short; //placeholder
     address public address_long; //placeholder
-    address public address_pool;
 
     address public constant swapRouterAddr = 0xE592427A0AEce92De3Edee1F18E0157C05861564;
 
@@ -59,31 +58,32 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
                 address_short
             );
         //TODO: repay the flashloan
-        bool success = true;
+        success = true;
         return success;
     }
 
-    function afterSwap(uint256 amountOut, uint256 amountInMaximum)
-        internal
-        returns (uint256 amountIn)//TODO: is it still usefull?
-    {
-        return
-            craftSwap(
-                userDebt,
-                IERC20(address_short).balanceOf(msg.sender),
-                address_short,
-                address_long
-            );
-    }
+    //function afterSwap(uint256 amountOut, uint256 amountInMaximum)
+    //    internal
+    //    returns (uint256 amountIn)//TODO: is it still usefull?
+    //{
+    //    return
+    //        craftSwap(
+    //            userDebt,
+    //            IERC20(address_short).balanceOf(msg.sender),
+    //            address_short,
+    //            address_long
+    //        );
+    //}
 
     //SWAP CRAFTER
-    function craftSwap(
+    function craftSwap(//TODO: use this example (no need to know the pool address beforehand)
+    //https://docs.uniswap.org/contracts/v3/guides/swaps/single-swaps#a-complete-single-swap-contract
         uint256 amountOut,
         uint256 amountInMaximum,
         address tokenBeforeSwap,
         address tokenAfterSwap
     ) internal returns (uint256 amountIn) {
-        uint24 poolFee = UniswapV3Pool(address_pool).fee();
+        uint24 poolFee = 0;//UniswapV3Pool(address_pool).fee();
         AaveTransferHelper.safeTransferFrom(
             tokenBeforeSwap,
             LOGIC_OWNER,
