@@ -39,8 +39,10 @@ contract FlashFactoryTest is HelperTest {
         //TODO assert the new proxy is in the Registry
         //assert the getters of the Proxy contract
         ProxyCraftPos proxy = ProxyCraftPos(payable(proxy_address));
-        assertEq(proxy.getOwner(), address(factory));
-        assertEq(proxy.getImplementation(), factory.PROXY_LOGIC());
+        vm.startPrank(USER);
+        assertEq(proxy.admin(), USER);
+        assertEq(proxy.implementation(), factory.PROXY_LOGIC());
+        vm.stopPrank();
 
 
         //To call proxy functions, you need to use a selector else there are compilation errors

@@ -20,12 +20,10 @@ contract ProxyLogicTest is HelperTest {
         console.log("ProxyLogic has been setup");
     }
 
-    function testNumberIs42() public {
-        assertEq(testNumber, 42);
-    }
 
     function testProxyLogicIsDeployed() public {
-        assertEq(address(proxyLogic), address(proxyLogic));
+        assertTrue(address(proxyLogic) != address(0));
+        //assertEq(address(proxyLogic), address(proxyLogic));
     }
 
     function testGetOwner() public {
@@ -34,10 +32,11 @@ contract ProxyLogicTest is HelperTest {
         (bool _ok, bytes memory _data) = address(proxyLogic).delegatecall(
             abi.encodeWithSignature("getOwner()")
         );
-        address _owner = abi.decode(_data, (address));
-
-        assert(_owner == DEPLOYER);
         vm.stopPrank();
+        
+        address _owner = abi.decode(_data, (address));
+        assertEq(_owner, DEPLOYER);
+        
         assertEq(_ok, true);
     }
 
@@ -58,24 +57,25 @@ contract ProxyLogicTest is HelperTest {
         assertEq(_ok, true);
     }
 
-    function testRequestFlashLoan() public {
-        address poolAddy = 0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2;
-        address longToken = Mainnet_wstETH;
-        address shortToken = Mainnet_wETH;
-        console.log("Starting the testRequestFlashLoan");
-        vm.startPrank(DEPLOYER);
-        (bool _ok, ) = address(proxyLogic).delegatecall(
-            abi.encodeWithSignature(
-                "requestFlashLoan(address,uint256)",
-                shortToken,
-                1000000000000000000
-            )
-        );
-        vm.stopPrank();
-        assertEq(_ok, true);
-    }
+    //TODO: requestFlashLoan function of ProxyLogic should be internal so no need to test it by itself
+    //function testRequestFlashLoan() public { 
+        //address poolAddy = 0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2;
+        //address longToken = Mainnet_wstETH;
+        //address shortToken = Mainnet_wETH;
+        //console.log("Starting the testRequestFlashLoan");
+        //vm.startPrank(DEPLOYER);
+        //(bool _ok, ) = address(proxyLogic).delegatecall(
+            //abi.encodeWithSignature(
+                //"requestFlashLoan(address,uint256)",
+                //shortToken,
+                //1000000000000000000
+            //)
+        //);
+        //vm.stopPrank();
+        //assertEq(_ok, true);
+    //}
 
-    // function testLongDepositedCraft() public {
+    //TODO: function testLongDepositedCraft() public {
     //     console.log("Starting the testLongDepositedCraft");
     //     vm.startPrank(DEPLOYER);
     //     (bool _ok, ) = address(proxyLogic).delegatecall(
@@ -89,7 +89,7 @@ contract ProxyLogicTest is HelperTest {
     //     assertEq(_ok, true);
     // }
 
-    // function testShortDepositedCraft() public {
+    //TODO: function testShortDepositedCraft() public {
     //     console.log("Starting the testShortDepositedCraft");
     //     vm.startPrank(DEPLOYER);
     //     (bool _ok, ) = address(proxyLogic).delegatecall(

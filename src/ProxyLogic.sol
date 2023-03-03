@@ -16,9 +16,9 @@ import "./FlashFactory.sol";
 import "./Registry.sol";
 
 contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
-    address owner;
-    address address_short;
-    address address_long;
+    address public owner;
+    address public address_short;
+    address public address_long;
 
     address public immutable swapRouterAddr;
 
@@ -248,7 +248,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
         return true;
     }
 
-    function requestFlashLoan(address _token, uint256 _amount) public {
+    function requestFlashLoan(address _token, uint256 _amount) internal {
         address receiverAddress = address(this);
         address asset = _token;
         uint256 amount = _amount;
