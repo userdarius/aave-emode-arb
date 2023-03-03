@@ -58,7 +58,8 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
     ) public override ifOwner returns (bool success) {
         //TODO: still WIP
         uint256 repayAmount;
-        uint256 premium = POOL.FLASHLOAN_PREMIUM_TOTAL(); //TODO: still useful?
+        //TODO: still useful? - NO - SOLVED
+        //uint256 premium = POOL.FLASHLOAN_PREMIUM_TOTAL();
         if (depositIsLong) {
             repayAmount = longDepositedCraft(_amountDeposited, _leverageRatio);
         } else {
@@ -70,23 +71,11 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
             address_long,
             address_short
         );
-        //TODO: repay the flashloan
+        //TODO: repay the flashloan - SOLVED
+        //Answer: Automaticaly Done by the Aave protocol
         success = true;
         return success;
     }
-
-    //function afterSwap(uint256 amountOut, uint256 amountInMaximum)
-    //    internal
-    //    returns (uint256 amountIn)//TODO: is it still usefull?
-    //{
-    //    return
-    //        craftSwap(
-    //            userDebt,
-    //            IERC20(address_short).balanceOf(msg.sender),
-    //            address_short,
-    //            address_long
-    //        );
-    //}
 
     //SWAP CRAFTER
     function craftSwap(
@@ -97,7 +86,8 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
         address tokenBeforeSwap,
         address tokenAfterSwap
     ) internal returns (uint256 amountIn) {
-        uint24 poolFee = 0; //UniswapV3Pool(address_pool).fee();
+        //We use the lowest fee tier for the pool
+        uint24 poolFee = 100; //UniswapV3Pool(address_pool).fee();
         AaveTransferHelper.safeTransferFrom(
             tokenBeforeSwap,
             msg.sender,
@@ -128,7 +118,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
             AaveTransferHelper.safeApprove(tokenBeforeSwap, swapRouterAddr, 0);
             AaveTransferHelper.safeTransfer(
                 tokenBeforeSwap,
-                msg.sender, //TODO: change this to "address(this) or msg.sender"depending on what you want to do
+                address(this), //TODO: change this to "address(this) or msg.sender"depending on what you want to do - SOLVED
                 amountInMaximum - amountIn
             );
         }
@@ -214,7 +204,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan {
         );
 
         return true;
-    } //TODO
+    } 
 
     function requestFlashLoan(address _token, uint256 _amount) internal {
         address receiverAddress = address(this);
