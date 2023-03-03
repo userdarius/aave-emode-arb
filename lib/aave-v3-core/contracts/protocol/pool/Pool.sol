@@ -19,6 +19,8 @@ import {IPool} from '../../interfaces/IPool.sol';
 import {IACLManager} from '../../interfaces/IACLManager.sol';
 import {PoolStorage} from './PoolStorage.sol';
 
+import 'forge-std/Test.sol';
+
 /**
  * @title Pool contract
  * @author Aave
@@ -36,7 +38,7 @@ import {PoolStorage} from './PoolStorage.sol';
  * @dev All admin functions are callable by the PoolConfigurator contract defined also in the
  *   PoolAddressesProvider
  */
-contract Pool is VersionedInitializable, PoolStorage, IPool {
+contract Pool is VersionedInitializable, PoolStorage, IPool, Test {
   using ReserveLogic for DataTypes.ReserveData;
 
   uint256 public constant POOL_REVISION = 0x1;
@@ -440,6 +442,7 @@ contract Pool is VersionedInitializable, PoolStorage, IPool {
       flashLoanPremiumToProtocol: _flashLoanPremiumToProtocol,
       flashLoanPremiumTotal: _flashLoanPremiumTotal
     });
+    console.log('WESSSHHHH');
     FlashLoanLogic.executeFlashLoanSimple(_reserves[asset], flashParams);
   }
 
