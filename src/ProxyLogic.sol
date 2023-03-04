@@ -135,6 +135,9 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
         uint256 _amountDeposited,
         uint256 _leverageRatio
     ) public returns (uint256) {
+        AaveTransferHelper.safeTransferFrom(address_long, owner, address(this), _amountDeposited);
+
+        console.log("BALANCE:", IERC20(address_long).balanceOf(address(this)));
         AaveTransferHelper.safeApprove(
             address_long,
             address(POOL),
@@ -142,16 +145,18 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
         );
         uint256 amount = _amountDeposited * (_leverageRatio - 1);
 
-        IERC20 long_token = IERC20(address_long);
-        long_token.transferFrom(msg.sender, address(this), _amountDeposited);
+        
 
         requestFlashLoan(address_long, amount);
+        console.log("BONJOUR");
 
         // check balanceOf long_token for this contract to check flashloan has been correctly executed
         // console.log(address_long.balanceOf(address(this)));
         // deposit flashloaned longed asset on Aave
 
         uint16 referralCode = 0;
+        AaveTransferHelper.safeTransferFrom(address_long, owner, address(this), amount);
+        AaveTransferHelper.safeApprove(address_long, address(POOL), amount);
         POOL.supply(address_long, amount, address(this), referralCode);
         // borrow phase on aave (this next part is tricky)
         // fetch the pool configuration from the reserve data
@@ -200,7 +205,10 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
         requestFlashLoan(address_long, amount);
 
         uint16 referralCode = 0;
+        AaveTransferHelper.safeTransferFrom(address_long, owner, address(this), amount);
+        AaveTransferHelper.safeApprove(address_long, address(POOL), amount);
         POOL.supply(address_long, amount, address(this), referralCode);
+
 
         uint256 configuration = POOL
             .getReserveData(address_long)

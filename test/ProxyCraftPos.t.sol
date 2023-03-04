@@ -5,6 +5,8 @@ import "forge-std/Test.sol";
 import "../src/ProxyCraftPos.sol";
 import "../src/ProxyLogic.sol";
 import "./HelperTest.t.sol";
+
+import "../src/AaveTransferHelper.sol";
 contract ProxyCraftPosTest is HelperTest {
     address FAKE_FACTORY;
     address PROXY_LOGIC;
@@ -37,6 +39,7 @@ contract ProxyCraftPosTest is HelperTest {
     function testCraftPos() public {
         //console.log(string(bytes4(keccak256(bytes("craftPosition(bool,uint256,uint256)")))));
         vm.startPrank(USER);
+        AaveTransferHelper.safeApprove(longToken, proxyAddress, IERC20(longToken).balanceOf(USER));
         (bool _ok, bytes memory data) = proxyAddress.call(abi.encodeWithSignature("craftPosition(bool,uint256,uint256)", true, 1000, 2));
         vm.stopPrank();
         assertTrue(_ok);
