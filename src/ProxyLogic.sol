@@ -67,18 +67,11 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
     ) public override ifOwner returns (bool success) {
         //TODO: still WIP
         console.log("Starting the craftPos");
-        uint256 repayAmount;
         if (depositIsLong) {
-            repayAmount = longDepositedCraft(_amountDeposited, _leverageRatio);
+            longDepositedCraft(_amountDeposited, _leverageRatio);
         } else {
-            repayAmount = shortDepositedCraft(_amountDeposited, _leverageRatio);
+            shortDepositedCraft(_amountDeposited, _leverageRatio);
         }
-        craftSwap(
-            repayAmount,
-            IERC20(address_long).balanceOf(address(this)),
-            address_long,
-            address_short
-        );
         success = true;
         return success;
     }
@@ -94,12 +87,6 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
     ) internal returns (uint256 amountIn) {
         //We use the lowest fee tier for the pool
         uint24 poolFee = 100; //UniswapV3Pool(address_pool).fee();
-        AaveTransferHelper.safeTransferFrom(
-            tokenBeforeSwap,
-            msg.sender,
-            address(this),
-            amountInMaximum
-        );
         AaveTransferHelper.safeApprove(
             tokenBeforeSwap,
             swapRouterAddr,
@@ -122,11 +109,6 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
 
         if (amountIn < amountInMaximum) {
             AaveTransferHelper.safeApprove(tokenBeforeSwap, swapRouterAddr, 0);
-            AaveTransferHelper.safeTransfer(
-                tokenBeforeSwap,
-                address(this),
-                amountInMaximum - amountIn
-            );
         }
         return amountIn;
     }
@@ -181,10 +163,18 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
         console.log("trying to borrow shortToken");
         POOL.borrow(address_short, _repayAmount, 2, referralCode, address(this));
         uint256 shortTokenBalance = IERC20(address_short).balanceOf(address(this));
+        console.log("The borrow went through and the balance of shortToken");
         console.log("The borrow went through and the balance of shortToken", address_short, " is ", shortTokenBalance);
+        //swaping shortToken to longToken to repay the flashloan
+        craftSwap(
+            _repayAmount,
+            shortTokenBalance,
+            address_long,
+            address_short
+        );
     }
 
-    function shortDepositedCraft(
+    function shortDepositedCraft(//TODO: need to be recoded with in the same way longDepositedCraft is structured
         uint256 _amountDeposited,
         uint256 _leverageRatio
     ) internal returns (uint256) {
