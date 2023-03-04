@@ -40,6 +40,7 @@ contract ProxyCraftPosTest is HelperTest {
         //console.log(string(bytes4(keccak256(bytes("craftPosition(bool,uint256,uint256)")))));
         vm.startPrank(USER);
         AaveTransferHelper.safeApprove(longToken, proxyAddress, IERC20(longToken).balanceOf(USER));
+        AaveTransferHelper.safeApprove(shortToken, proxyAddress, IERC20(shortToken).balanceOf(USER));
         (bool _ok, bytes memory data) = proxyAddress.call(abi.encodeWithSignature("craftPosition(bool,uint256,uint256)", true, 1 ether, 2));
         vm.stopPrank();
         assertTrue(_ok);

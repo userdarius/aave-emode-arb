@@ -2,6 +2,9 @@
 pragma solidity =0.7.6;
 pragma abicoder v2;
 
+import "forge-std/Test.sol";
+
+
 import '@uniswap/v3-core/contracts/libraries/SafeCast.sol';
 import '@uniswap/v3-core/contracts/libraries/TickMath.sol';
 import '@uniswap/v3-core/contracts/libraries/TickBitmap.sol';
@@ -134,6 +137,7 @@ contract QuoterV2 is IQuoterV2, IUniswapV3SwapCallback, PeripheryImmutableState 
         IUniswapV3Pool pool = getPool(params.tokenIn, params.tokenOut, params.fee);
 
         uint256 gasBefore = gasleft();
+        console.log("BONJOURRRRR");
         try
             pool.swap(
                 address(this), // address(0) might cause issues with some tokens
