@@ -34,6 +34,14 @@ contract ProxyCraftPosTest is HelperTest {
         console.log("ProxyCraftPos has been setup");
     }
 
+    function testCraftPos() public {
+        //console.log(string(bytes4(keccak256(bytes("craftPosition(bool,uint256,uint256)")))));
+        vm.startPrank(USER);
+        (bool _ok, bytes memory data) = proxyAddress.call(abi.encodeWithSignature("craftPosition(bool,uint256,uint256)", true, 1000, 2));
+        vm.stopPrank();
+        assertTrue(_ok);
+    }
+
     function testConstructor() public {
         console.log("Starting testConstructor");
         //TODO: assert "address_short, address_long, owner"

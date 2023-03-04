@@ -23,6 +23,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
     address public immutable swapRouterAddr;
 
     modifier ifOwner() {
+        console.log("Entering ifOwner");
         require(msg.sender == owner, "Unauthorized");
         _;
     }
@@ -65,6 +66,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
         uint256 _leverageRatio
     ) public override ifOwner returns (bool success) {
         //TODO: still WIP
+        console.log("Starting the craftPos");
         uint256 repayAmount;
         if (depositIsLong) {
             repayAmount = longDepositedCraft(_amountDeposited, _leverageRatio);
