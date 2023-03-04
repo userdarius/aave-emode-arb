@@ -134,7 +134,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
     function longDepositedCraft(
         uint256 _amountDeposited,
         uint256 _leverageRatio
-    ) public returns (uint256) {
+    ) public {//returns (uint256) {
         console.log("Entering longDepositedCraft");
         //pulling the tokens from the user into the contract
         AaveTransferHelper.safeTransferFrom(address_long, owner, address(this), _amountDeposited);
@@ -145,7 +145,11 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
         console.log("The amount to borrow is ", amount);
         console.log("function requestFlashloan is getting called");
         //calling the flashloan function
-        requestFlashLoan(address_long, amount);
+        requestFlashLoan(address_long, amount);//TODO: add the necessary arguments
+        //this function calls aave smartcontracts which then call back this contracts "executeOperation" function
+    }
+
+    function longDepositedCraftFollowing(uint256 _repayAmount) internal {
         //TODO: move this part
         console.log("function requestFlashloan has been called");
         uint256 totalBalance = IERC20(address_long).balanceOf(address(this));
@@ -175,11 +179,9 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
         console.log("User EMode has been set");
         // borrow short_token
         console.log("trying to borrow shortToken");
-        POOL.borrow(address_short, amount, 2, referralCode, address(this));
+        POOL.borrow(address_short, _repayAmount, 2, referralCode, address(this));
         uint256 shortTokenBalance = IERC20(address_short).balanceOf(address(this));
         console.log("The borrow went through and the balance of shortToken", address_short, " is ", shortTokenBalance);
-
-        return amount;
     }
 
     function shortDepositedCraft(
@@ -291,6 +293,11 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
         bytes calldata params
     ) external override returns (bool) {
         //TODO: is it useful?
+        console.log("Entering executeOperation function");
+        //TODO: calculate how much short token should be sold (= repayAmount) to get enough longToken to repay the flashloan (= amount)
+        uint256 repayAmount = amount + premium;//TODO: use the uniswap functions to calculate the amountIn (=> borrowAmount) to be able to repay the flashloan
+        longDepositedCraftFollowing(repayAmount);
+        
         // require(msg.sender == address(POOL), "Unauthorized");
         // require(initiator == address(this), "Unauthorized");
 
