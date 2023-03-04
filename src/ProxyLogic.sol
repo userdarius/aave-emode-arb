@@ -131,7 +131,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
         //this function calls aave smartcontracts which then call back this contracts "executeOperation" function
     }
 
-    function longDepositedCraftFollowing(uint256 _repayAmount) internal {
+    function prepareRepayement(uint256 _repayAmount) internal {
         //TODO: move this part
         console.log("function requestFlashloan has been called");
         uint256 totalBalance = IERC20(address_long).balanceOf(address(this));
@@ -286,7 +286,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
         console.log("Entering executeOperation function");
         //TODO: calculate how much short token should be sold (= repayAmount) to get enough longToken to repay the flashloan (= amount)
         uint256 repayAmount = amount + premium;//TODO: use the uniswap functions to calculate the amountIn (=> borrowAmount) to be able to repay the flashloan
-        longDepositedCraftFollowing(repayAmount);
+        prepareRepayement(repayAmount);
         
         // require(msg.sender == address(POOL), "Unauthorized");
         // require(initiator == address(this), "Unauthorized");
