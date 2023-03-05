@@ -11,8 +11,6 @@ import "../lib/v3-core/contracts/UniswapV3Pool.sol";
 import "./AaveTransferHelper.sol";
 import "forge-std/Test.sol";
 
-import "../lib/v3-periphery/contracts/interfaces/IQuoterV2.sol";
-
 import "./FlashFactory.sol";
 
 import "./Registry.sol";
@@ -23,7 +21,6 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
     address public address_long;
 
     address public immutable swapRouterAddr;
-    address public immutable quoterRouterAddr = 0x61fFE014bA17989E743c5F6cB21bF9697530B21e;
 
     modifier ifOwner() {
         console.log("Entering ifOwner");
@@ -90,10 +87,11 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
     ) internal returns (uint256 amountIn) {
         //We use the lowest fee tier for the pool
         uint24 poolFee = 100; //UniswapV3Pool(address_pool).fee();
-
-        console.log("BALANCE:", IERC20(tokenBeforeSwap).balanceOf(address(this)));
-        console.log("REPAY:", amountOut);
-        AaveTransferHelper.safeTransfer(tokenBeforeSwap, address(msg.sender), amountOut);
+        AaveTransferHelper.safeApprove(
+            tokenBeforeSwap,
+            swapRouterAddr,
+            amountInMaximum
+        );
 
         ISwapRouter.ExactOutputSingleParams memory params = ISwapRouter
             .ExactOutputSingleParams({
@@ -106,17 +104,12 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
                 amountInMaximum: amountInMaximum,
                 sqrtPriceLimitX96: 0
             });
-        console.log("AFTER PARAMS");
-
-        //AaveTransferHelper.safeTransferFrom(tokenBeforeSwap, owner, address(msg.sender), amountIn);
-        //AaveTransferHelper.safeTransfer(tokenBeforeSwap, swapRouterAddr ,amountIn );
 
         amountIn = ISwapRouter(swapRouterAddr).exactOutputSingle(params);
-        // if (amountIn < amountInMaximum) {
-        //     AaveTransferHelper.safeApprove(tokenBeforeSwap, swapRouterAddr, 0);
-        //     //AaveTransferHelper.safeTransferFrom(tokenBeforeSwap, msg.sender, swapRouterAddr, amountIn);
-        // }
-        // AaveTransferHelper.safeTransfer(tokenAfterSwap, msg.sender, amountOut);
+
+        if (amountIn < amountInMaximum) {
+            AaveTransferHelper.safeApprove(tokenBeforeSwap, swapRouterAddr, 0);
+        }
         return amountIn;
     }
 
@@ -172,13 +165,12 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
         uint256 shortTokenBalance = IERC20(address_short).balanceOf(address(this));
         console.log("The borrow went through and the balance of shortToken");
         console.log("The borrow went through and the balance of shortToken", address_short, " is ", shortTokenBalance);
-        console.log("The balance of ", address(this), " is ", IERC20(address_short).balanceOf(address(this)));
         //swaping shortToken to longToken to repay the flashloan
         craftSwap(
             _repayAmount,
             shortTokenBalance,
-            address_short,
-            address_long
+            address_long,
+            address_short
         );
     }
 
@@ -294,16 +286,7 @@ contract ProxyLogic is FlashLoanSimpleReceiverBase, IFlashLoan, Test {
         console.log("Entering executeOperation function");
         //TODO: calculate how much short token should be sold (= repayAmount) to get enough longToken to repay the flashloan (= amount)
         uint256 repayAmount = amount + premium;//TODO: use the uniswap functions to calculate the amountIn (=> borrowAmount) to be able to repay the flashloan
-        (uint256 amountIn, , ,)  = IQuoterV2(quoterRouterAddr).quoteExactOutputSingle(
-            IQuoterV2.QuoteExactOutputSingleParams({
-                tokenIn: address_long,
-                tokenOut: address_short,
-                amount: repayAmount,
-                fee: 100,
-                sqrtPriceLimitX96: 0
-            })
-        );
-        prepareRepayement(amountIn);
+        prepareRepayement(repayAmount);
         
         // require(msg.sender == address(POOL), "Unauthorized");
         // require(initiator == address(this), "Unauthorized");
